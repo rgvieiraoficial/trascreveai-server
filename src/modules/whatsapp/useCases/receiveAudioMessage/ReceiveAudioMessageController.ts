@@ -1,15 +1,17 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 
-import { ReceiveTextMessageUseCase } from './ReceiveTextMessageUseCase';
+import { ReceiveAudioMessageUseCase } from './ReceiveAudioMessageUseCase';
 
 import { IWebhookEventBody } from '../../types/webhookEventBody';
 
-class ReceiveTextMessageController {
+class ReceiveAudioMessageController {
 
-  constructor(private receiveMessageWebhookEvent: ReceiveTextMessageUseCase) { }
+  constructor(private receiveAudioMessageUseCase: ReceiveAudioMessageUseCase) { }
 
   async handle(request: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
     const requestBody = request.body as IWebhookEventBody;
+
+    console.log(requestBody.entry[0].changes[0].value.messages[0]);
 
     const name = requestBody.entry[0].changes[0].value.contacts[0].profile.name;
 
@@ -19,12 +21,15 @@ class ReceiveTextMessageController {
 
     const message_id = requestBody.entry[0].changes[0].value.messages[0].id;
 
-    const message_body = requestBody.entry[0].changes[0].value.messages[0].text.body; //extract the message text from the webhook payload
+    const audio = {
+      id: requestBody.entry[0].changes[0].value.messages[0].audio.id,
+      sha256: requestBody.entry[0].changes[0].value.messages[0].audio.id,
+    }
 
-    await this.receiveMessageWebhookEvent.execute({ name, phone_number_id, from, message_id, message_body });
+    await this.receiveAudioMessageUseCase.execute({ name, phone_number_id, from, message_id, audio });
 
     return reply.status(200).send();
   }
 }
 
-export { ReceiveTextMessageController };
+export { ReceiveAudioMessageController };
