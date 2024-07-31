@@ -3,6 +3,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { IWebhookEventBody } from '../../types/webhookEventBody';
 
 import { receiveTextMessageController } from '../receiveTextMessage';
+import { receiveAudioMessageController } from '../receiveAudioMessage';
 
 class SelectUseCaseBasedOnEventTypeController {
 
@@ -10,6 +11,10 @@ class SelectUseCaseBasedOnEventTypeController {
     {
       type: 'text',
       useCase: receiveTextMessageController
+    },
+    {
+      type: 'audio',
+      useCase: receiveAudioMessageController
     }
   ];
 

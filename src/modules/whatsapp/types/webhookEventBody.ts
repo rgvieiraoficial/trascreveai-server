@@ -33,6 +33,10 @@ export interface IWebhookEventBody {
                     id: string,
                     title: string
                   }
+                },
+                audio: {
+                  id: string;
+                  sha256: string;
                 }
               }
             ]
