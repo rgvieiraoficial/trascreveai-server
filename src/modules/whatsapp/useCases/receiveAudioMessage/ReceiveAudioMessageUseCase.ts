@@ -1,9 +1,11 @@
-import fs from 'fs';
 import path from 'path';
 
 import { AxiosResponse } from 'axios';
 
 import { graphApi } from '../../../../lib/graphApi';
+
+import { audioTranscribe } from '../../../../utils/audioTranscribe';
+import downloadAudioFromMeta from '../../../../utils/downloadAudioFromMeta';
 
 interface IRequest {
   name: string;
@@ -53,6 +55,20 @@ class ReceiveAudioMessageUseCase {
 
     const url = `/${phone_number_id}/messages?access_token=${token}`;
 
+    const fist_reply_data: ISendMessageData = {
+      messaging_product: "whatsapp",
+      to: from,
+      text: {
+        body: 'Transcrevendo áudio...'
+      },
+    };
+
+    try {
+      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, fist_reply_data);
+    } catch (err) {
+      console.log(err.message);
+    }
+
     const header_config = {
       headers: { Authorization: `Bearer ${token}` }
     };
@@ -76,38 +92,25 @@ class ReceiveAudioMessageUseCase {
 
       const file_name = `audio_${Date.now().toString()}.ogg`;
 
-      const full_pah = path.resolve('src', 'tmp', 'media', 'audios', file_name);
+      const file_path = path.resolve('src', 'tmp', 'media', 'audios', file_name);
 
-      const file = fs.createWriteStream(full_pah);
+      await downloadAudioFromMeta(media_url.data.url, file_path);
 
-      graphApi.get(media_url.data.url, {
-        responseType: 'stream',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'audio/ogg'
-        }
-      }).then(response => {
-        response.data.pipe(file);
+      const transcript = await audioTranscribe(file_path);
 
-        file.on("finish", () => {
-          file.close();
-          console.log("Download Completed");
-        });
-      });
-    } catch (err) {
-      console.log(err.message);
-    }
+      const reply_data: ISendMessageData = {
+        messaging_product: "whatsapp",
+        to: from,
+        text: {
+          body: transcript
+        },
+      };
 
-    const reply_data: ISendMessageData = {
-      messaging_product: "whatsapp",
-      to: from,
-      text: {
-        body: 'Você acabou de me enviar um áudio. Estou trabalhando para ser capaz de transcrevê-lo.'
-      },
-    };
-
-    try {
-      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_data);
+      try {
+        await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_data);
+      } catch (err) {
+        console.log(err.message);
+      }
     } catch (err) {
       console.log(err.message);
     }
