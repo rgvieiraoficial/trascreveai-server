@@ -53,16 +53,30 @@ class ReceiveTextMessageUseCase {
       console.log(err.message);
     }
 
-    const reply_data: ISendMessageData = {
+    const reply_message_one: ISendMessageData = {
       messaging_product: "whatsapp",
       to: from,
       text: {
-        body: 'Olá, tudo bem? Basta enviar o áudio desejado que transcrevo para texto para você.'
+        body: 'Olá, tudo bem? 😃\n\nSou o seu Assistente para ajudar com tarefas de transcrição de áudio 😎'
       },
     };
 
     try {
-      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_data);
+      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_message_one);
+    } catch (err) {
+      console.log(err.message);
+    }
+
+    const reply_message_two: ISendMessageData = {
+      messaging_product: "whatsapp",
+      to: from,
+      text: {
+        body: 'Para transcrever um áudio basta envia-lo para mim a qualquer momento, que realizo a transcrição para você 😉'
+      },
+    };
+
+    try {
+      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_message_two);
     } catch (err) {
       console.log(err.message);
     }

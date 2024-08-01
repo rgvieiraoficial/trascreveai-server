@@ -102,7 +102,7 @@ class ReceiveAudioMessageUseCase {
         messaging_product: "whatsapp",
         to: from,
         text: {
-          body: transcript
+          body: `*${transcript}*`
         },
       };
 
