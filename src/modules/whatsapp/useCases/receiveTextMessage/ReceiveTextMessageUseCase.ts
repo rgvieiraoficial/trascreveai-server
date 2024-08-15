@@ -1,6 +1,10 @@
 import { AxiosResponse } from 'axios';
 
+import { IBotMessagesTemplatesRepository } from '../../../bot/repositories/IBotMessagesTemplatesRepository';
+
 import { graphApi } from '../../../../lib/graphApi';
+
+import { IMessageContent, ISendMessageData } from '../../types/whastsappTypes';
 
 interface IRequest {
   name: string;
@@ -10,23 +14,11 @@ interface IRequest {
   message_body: string;
 }
 
-interface ISendMessageData {
-  messaging_product: string;
-  to?: string;
-  status?: string;
-  text?: {
-    body: string;
-  };
-  message_id?: string;
-  messages?: [
-    {
-      id: string;
-    }
-  ]
-}
-
-
 class ReceiveTextMessageUseCase {
+
+  constructor(
+    private botsMessagesTemplatesRepository: IBotMessagesTemplatesRepository
+  ) { }
 
   async execute({ name, phone_number_id, from, message_id, message_body }: IRequest): Promise<void> {
     console.log(`ID: ${message_id}`);
@@ -53,33 +45,50 @@ class ReceiveTextMessageUseCase {
       console.log(err.message);
     }
 
-    const reply_message_one: ISendMessageData = {
-      messaging_product: "whatsapp",
-      to: from,
-      text: {
-        body: 'Olá, tudo bem? 😃\n\nSou o seu Assistente para ajudar com tarefas de transcrição de áudio 😎'
-      },
-    };
+    const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType('welcome-message');
 
-    try {
-      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_message_one);
-    } catch (err) {
-      console.log(err.message);
-    }
+    const botMessages: IMessageContent[] = Object.keys(getBotMessageToSend.content).map(i => JSON.parse(getBotMessageToSend.content[Number(i)])) as IMessageContent[];
 
-    const reply_message_two: ISendMessageData = {
-      messaging_product: "whatsapp",
-      to: from,
-      text: {
-        body: 'Para transcrever um áudio basta envia-lo para mim a qualquer momento, que realizo a transcrição para você 😉'
-      },
-    };
+    const promises = [];
 
-    try {
-      await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_message_two);
-    } catch (err) {
-      console.log(err.message);
-    }
+    botMessages.forEach(async message => {
+
+      let reply_message: ISendMessageData = null;
+
+      if (message.type === 'text') {
+        reply_message = {
+          messaging_product: "whatsapp",
+          to: from,
+          text: {
+            body: message.body.text
+          },
+        };
+      }
+
+      if (message.type === 'buttons') {
+        reply_message = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: from,
+          type: "interactive",
+          interactive: {
+            type: message.type,
+            body: message.body,
+            footer: message.footer,
+            action: message.action
+          }
+        }
+      }
+
+      try {
+        const response = await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_message);
+        promises.push(response);
+      } catch (err) {
+        console.log(err.message);
+      }
+    });
+
+    await Promise.all(promises);
   }
 }
 
