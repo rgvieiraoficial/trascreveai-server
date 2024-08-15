@@ -87,6 +87,7 @@ class ReceiveTextMessageUseCase {
           interactive: {
             type: message.type,
             body: message.body,
+            footer: message.footer,
             action: message.action
           }
         }
