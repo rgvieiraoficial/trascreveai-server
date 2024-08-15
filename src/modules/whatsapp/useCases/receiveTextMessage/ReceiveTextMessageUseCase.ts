@@ -53,6 +53,8 @@ class ReceiveTextMessageUseCase {
 
     botMessages.forEach(async message => {
 
+      console.log(message);
+
       let reply_message: ISendMessageData = null;
 
       if (message.type === 'text') {
@@ -65,7 +67,7 @@ class ReceiveTextMessageUseCase {
         };
       }
 
-      if (message.type === 'buttons') {
+      if (message.type === 'button') {
         reply_message = {
           messaging_product: "whatsapp",
           recipient_type: "individual",
