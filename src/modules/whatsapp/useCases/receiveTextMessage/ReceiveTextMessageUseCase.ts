@@ -52,7 +52,6 @@ class ReceiveTextMessageUseCase {
     const promises = [];
 
     botMessages.forEach(async message => {
-
       let reply_message: ISendMessageData = null;
 
       if (message.type === 'text') {
@@ -65,7 +64,21 @@ class ReceiveTextMessageUseCase {
         };
       }
 
-      if (message.type === 'buttons') {
+      if (message.type === 'button') {
+        reply_message = {
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: from,
+          type: "interactive",
+          interactive: {
+            type: message.type,
+            body: message.body,
+            action: message.action
+          }
+        }
+      }
+
+      if (message.type === 'list') {
         reply_message = {
           messaging_product: "whatsapp",
           recipient_type: "individual",
