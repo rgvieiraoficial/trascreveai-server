@@ -82,8 +82,6 @@ class ReceiveTextMessageUseCase {
         }
       }
 
-      console.log(reply_message);
-
       try {
         const response = await graphApi.post<ISendMessageData, AxiosResponse<ISendMessageData>>(url, reply_message);
         promises.push(response);
