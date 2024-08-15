@@ -33,11 +33,11 @@ interface ISendMessageData {
   status?: string;
   type?: string;
   text?: {
+    footer?: {
+      text: string;
+    }
     body: string;
   };
-  footer?: {
-    text: string;
-  }
   interactive?: {
     type: string,
     body: {
