@@ -92,7 +92,7 @@ class ReceiveAudioMessageUseCase {
 
       const file_name = `audio_${Date.now().toString()}.ogg`;
 
-      const file_path = path.resolve('src', 'tmp', 'media', 'audios', file_name);
+      const file_path = path.resolve('tmp', 'media', 'audios', file_name);
 
       await downloadAudioFromMeta(media_url.data.url, file_path);
 
