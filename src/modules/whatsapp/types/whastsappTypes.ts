@@ -6,6 +6,11 @@ interface IButton {
   };
 }
 
+interface ISection {
+  title: string,
+  rows: { id: string, title: string }[],
+}
+
 interface IMessageContent {
   type: string;
   body: {
@@ -15,7 +20,9 @@ interface IMessageContent {
     text: string;
   };
   action?: {
-    buttons: IButton[];
+    buttons?: IButton[];
+    button?: string,
+    sections?: ISection[];
   }
 }
 
