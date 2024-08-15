@@ -21,3 +21,12 @@ model BotMessagesTemplate {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model Contact {
+  id              String   @id @default(uuid())
+  name            String
+  whatsapp_number String   @unique
+  phone_number_id String?  @unique
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+}

@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 
 import { botsRoutes } from './bots.routes';
+import { contactsRoutes } from './contacts.routes';
 import { whatsappRoutes } from './whatsapp.routes';
 
 async function appRoutes(fastify: FastifyInstance) {
@@ -9,6 +10,8 @@ async function appRoutes(fastify: FastifyInstance) {
   });
 
   fastify.register(botsRoutes, { prefix: '/bots' });
+
+  fastify.register(contactsRoutes, { prefix: '/contacts' });
 
   fastify.register(whatsappRoutes, { prefix: '/whatsapp' });
 };

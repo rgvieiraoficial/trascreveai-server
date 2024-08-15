@@ -1,6 +1,9 @@
 import { AxiosResponse } from 'axios';
 
+import { Contact } from '@prisma/client';
+
 import { IBotMessagesTemplatesRepository } from '../../../bot/repositories/IBotMessagesTemplatesRepository';
+import { IContactsRepository } from '../../../contacts/repositories/IContactsRepository';
 
 import { graphApi } from '../../../../lib/graphApi';
 
@@ -17,7 +20,8 @@ interface IRequest {
 class ReceiveTextMessageUseCase {
 
   constructor(
-    private botsMessagesTemplatesRepository: IBotMessagesTemplatesRepository
+    private botsMessagesTemplatesRepository: IBotMessagesTemplatesRepository,
+    private contactsRepository: IContactsRepository
   ) { }
 
   async execute({ name, phone_number_id, from, message_id, message_body }: IRequest): Promise<void> {
@@ -45,6 +49,20 @@ class ReceiveTextMessageUseCase {
       console.log(err.message);
     }
 
+    const contactExists = await this.contactsRepository.findByPhoneNumberId(phone_number_id);
+
+    let contact: Contact = null;
+
+    if (!contactExists) {
+      contact = await this.contactsRepository.create({
+        name,
+        whatsapp_number: from,
+        phone_number_id,
+      });
+    } else {
+      contact = contactExists;
+    }
+
     const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType('welcome-message');
 
     const botMessages: IMessageContent[] = getBotMessageToSend.content as {} as IMessageContent[];
@@ -57,7 +75,7 @@ class ReceiveTextMessageUseCase {
       if (message.type === 'text') {
         reply_message = {
           messaging_product: "whatsapp",
-          to: from,
+          to: contact.whatsapp_number,
           text: {
             body: message.body.text
           },
@@ -68,7 +86,7 @@ class ReceiveTextMessageUseCase {
         reply_message = {
           messaging_product: "whatsapp",
           recipient_type: "individual",
-          to: from,
+          to: contact.whatsapp_number,
           type: "interactive",
           interactive: {
             type: message.type,
@@ -82,7 +100,7 @@ class ReceiveTextMessageUseCase {
         reply_message = {
           messaging_product: "whatsapp",
           recipient_type: "individual",
-          to: from,
+          to: contact.whatsapp_number,
           type: "interactive",
           interactive: {
             type: message.type,
