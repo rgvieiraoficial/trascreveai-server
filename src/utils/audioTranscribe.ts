@@ -11,7 +11,7 @@ export async function audioTranscribe(file: string): Promise<string> {
     fs.readFileSync(file),
     // STEP 3: Configure Deepgram options for audio analysis
     {
-      model: "nova-2",
+      model: "whisper-large",
       smart_format: true,
       language: 'pt'
     }
