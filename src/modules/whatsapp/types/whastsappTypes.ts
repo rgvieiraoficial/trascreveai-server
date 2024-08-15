@@ -35,6 +35,9 @@ interface ISendMessageData {
   text?: {
     body: string;
   };
+  footer?: {
+    text: string;
+  }
   interactive?: {
     type: string,
     body: {

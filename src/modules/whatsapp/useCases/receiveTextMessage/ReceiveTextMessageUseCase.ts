@@ -61,6 +61,7 @@ class ReceiveTextMessageUseCase {
           text: {
             body: message.body.text
           },
+          footer: message.footer
         };
       }
 
@@ -87,7 +88,6 @@ class ReceiveTextMessageUseCase {
           interactive: {
             type: message.type,
             body: message.body,
-            footer: message.footer,
             action: message.action
           }
         }
