@@ -19,7 +19,7 @@ class CreateBotMessageTemplateController {
 
     await this.createBotMessageTemplateUseCase.execute({ title, content, type });
 
-    return reply.status(200).send();
+    return reply.status(201).send();
   }
 }
 
