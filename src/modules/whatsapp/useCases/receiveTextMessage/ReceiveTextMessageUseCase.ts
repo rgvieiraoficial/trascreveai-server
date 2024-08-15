@@ -59,7 +59,6 @@ class ReceiveTextMessageUseCase {
           messaging_product: "whatsapp",
           to: from,
           text: {
-            footer: message.footer,
             body: message.body.text
           },
         };
@@ -88,6 +87,7 @@ class ReceiveTextMessageUseCase {
           interactive: {
             type: message.type,
             body: message.body,
+            footer: message.footer,
             action: message.action
           }
         }

@@ -33,9 +33,6 @@ interface ISendMessageData {
   status?: string;
   type?: string;
   text?: {
-    footer?: {
-      text: string;
-    }
     body: string;
   };
   interactive?: {
@@ -46,8 +43,10 @@ interface ISendMessageData {
     footer?: {
       text: string;
     }
-    action: {
-      buttons?: IButton[]
+    action?: {
+      buttons?: IButton[];
+      button?: string;
+      sections?: ISection[];
     }
   }
   message_id?: string;
