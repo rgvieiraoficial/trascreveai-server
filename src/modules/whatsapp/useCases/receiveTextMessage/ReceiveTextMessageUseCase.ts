@@ -47,7 +47,7 @@ class ReceiveTextMessageUseCase {
 
     const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType('welcome-message');
 
-    const botMessages: IMessageContent[] = Object.keys(getBotMessageToSend.content).map(i => JSON.parse(getBotMessageToSend.content[Number(i)])) as IMessageContent[];
+    const botMessages: IMessageContent[] = getBotMessageToSend.content as {} as IMessageContent[];
 
     const promises = [];
 
