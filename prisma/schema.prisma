@@ -21,3 +21,38 @@ model BotMessagesTemplate {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model SessionTasks {
+  id         String     @id @default(uuid())
+  title      String?
+  summary    String?
+  status     Int
+  stage      String
+  contact    Contact    @relation(fields: [contactId], references: [id])
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  contactId  String
+  Messages   Messages[]
+}
+
+model Messages {
+  id                   String       @id @default(uuid())
+  content              String
+  position             String
+  messaging_product_id String?
+  status               Int
+  session_task         SessionTasks @relation(fields: [sessionTaskId], references: [id])
+  created_at           DateTime     @default(now())
+  updated_at           DateTime     @updatedAt
+  sessionTaskId        String
+}
+
+model Contact {
+  id              String         @id @default(uuid())
+  name            String
+  whatsapp_number String         @unique
+  phone_number_id String?        @unique
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+  SessionTask     SessionTasks[]
+}

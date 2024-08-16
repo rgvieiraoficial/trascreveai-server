@@ -2,9 +2,9 @@ import { BotMessagesTemplatesRepository } from '../../../bot/repositories/implem
 import { ContactsRepository } from '../../../contacts/repositories/implementations/ContactsRepository';
 import { SessionTasksRepository } from '../../../sessions_tasks/repositories/implementations/SessionTasksRepository';
 
-import { ReceiveTextMessageUseCase } from './ReceiveTextMessageUseCase';
+import { ReceiveInteractiveMessageUseCase } from './ReceiveInteractiveMessageUseCase';
 
-import { ReceiveTextMessageController } from './ReceiveTextMessageController';
+import { ReceiveInteractiveMessageController } from './ReceiveInteractiveMessageController';
 
 const botMessagesTemplatesRepository = new BotMessagesTemplatesRepository();
 
@@ -12,8 +12,8 @@ const contactsRepository = new ContactsRepository();
 
 const sessionTasksRepository = new SessionTasksRepository();
 
-const receiveTextMessageUseCase = new ReceiveTextMessageUseCase(botMessagesTemplatesRepository, contactsRepository, sessionTasksRepository);
+const receiveInteractiveMessageUseCase = new ReceiveInteractiveMessageUseCase(botMessagesTemplatesRepository, contactsRepository, sessionTasksRepository);
 
-const receiveTextMessageController = new ReceiveTextMessageController(receiveTextMessageUseCase);
+const receiveInteractiveMessageController = new ReceiveInteractiveMessageController(receiveInteractiveMessageUseCase);
 
-export { receiveTextMessageController };
+export { receiveInteractiveMessageController };

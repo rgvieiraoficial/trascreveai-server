@@ -4,10 +4,8 @@ import { IBotMessagesTemplatesRepository } from '../../../bot/repositories/IBotM
 import { IContactsRepository } from '../../../contacts/repositories/IContactsRepository';
 import { ISessionTasksRepository } from '../../../sessions_tasks/repositories/ISessionTasksRepository';
 
-import { IMessageContent } from 'modules/whatsapp/types/whastsappTypes';
+import { IMessageContent } from '../../types/whastsappTypes';
 
-import { audioTranscribe } from '../../utils/audioTranscribe';
-import downloadAudioFromMeta from '../../utils/downloadAudioFromMeta';
 import markMessageAsRead from '../../utils/markMessageAsRead';
 import sendMessageToWhatsAppContact from '../../utils/sendMessageToWhatsAppContact';
 
@@ -16,13 +14,10 @@ interface IRequest {
   phone_number_id: string;
   from: string;
   message_id: string;
-  audio: {
-    id: string;
-    sha256: string;
-  };
+  message_body: string;
 }
 
-class ReceiveAudioMessageUseCase {
+class ReceiveInteractiveMessageUseCase {
 
   constructor(
     private botsMessagesTemplatesRepository: IBotMessagesTemplatesRepository,
@@ -30,10 +25,10 @@ class ReceiveAudioMessageUseCase {
     private sessionsTasksRepository: ISessionTasksRepository
   ) { }
 
-  async execute({ name, phone_number_id, from, message_id, audio }: IRequest): Promise<void> {
+  async execute({ name, phone_number_id, from, message_id, message_body }: IRequest): Promise<void> {
     console.log(`ID: ${message_id}`);
 
-    console.log(`Audio ID: ${audio.id}`);
+    console.log(`Body: ${message_body}`);
 
     await markMessageAsRead(phone_number_id, message_id);
 
@@ -58,7 +53,7 @@ class ReceiveAudioMessageUseCase {
     if (!sessionTaskExists || sessionTaskExists.status === 2) {
       session_task = await this.sessionsTasksRepository.create({
         status: 1,
-        stage: 'transcribe_audio_message',
+        stage: 'welcome-message',
         contact: {
           connect: {
             id: contact.id
@@ -71,41 +66,24 @@ class ReceiveAudioMessageUseCase {
 
     let message_type: string = '';
 
-    if (session_task.stage === 'transcribe_audio_message') {
-      message_type = 'transcribe-audio-message';
+    if (session_task.stage === 'welcome-message') {
+      message_type = 'welcome-message';
 
-      await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
-        type: 'text',
-        body: {
-          text: 'Transcrevendo áudio...'
-        }
-      }]);
+      await this.sessionsTasksRepository.updateStage(session_task.id, 'initial_list_menu');
+    } else if (session_task.stage === 'initial_list_menu') {
+      if (message_body === 'btn_transcribe_audio') {
+        message_type = 'transcribe-audio-message';
 
-      await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio');
-
-      const file_path = await downloadAudioFromMeta(phone_number_id, audio.id);
-
-      const transcript = await audioTranscribe(file_path);
-
-      await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
-        type: 'text',
-        body: {
-          text: `*${transcript}*`
-        }
-      }]);
-
-      await this.sessionsTasksRepository.updateStatus(session_task.id, 2);
-    } else if (session_task.stage === 'transcribing_audio') {
-      message_type = 'transcribing-audio-message';
-
-      await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
-        type: 'text',
-        body: {
-          text: 'Não sei o que responder ainda...'
-        }
-      }]);
+        await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio_message');
+      }
     }
+
+    const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType(message_type);
+
+    const botMessages: IMessageContent[] = getBotMessageToSend.content as {} as IMessageContent[];
+
+    await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, botMessages);
   }
 }
 
-export { ReceiveAudioMessageUseCase };
+export { ReceiveInteractiveMessageUseCase };
