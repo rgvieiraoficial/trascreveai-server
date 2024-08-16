@@ -58,7 +58,7 @@ class ReceiveAudioMessageUseCase {
     if (!sessionTaskExists || sessionTaskExists.status === 2) {
       session_task = await this.sessionsTasksRepository.create({
         status: 1,
-        stage: 'transcribing_audio',
+        stage: 'transribe_audio_message',
         contact: {
           connect: {
             id: contact.id
