@@ -40,7 +40,6 @@ class ReceiveInteractiveMessageUseCase {
       contact = await this.contactsRepository.create({
         name,
         whatsapp_number: from,
-        phone_number_id,
       });
     } else {
       contact = contactExists;

@@ -39,8 +39,7 @@ class ReceiveTextMessageUseCase {
     if (!contactExists) {
       contact = await this.contactsRepository.create({
         name,
-        whatsapp_number: from,
-        phone_number_id,
+        whatsapp_number: from
       });
     } else {
       contact = contactExists;
