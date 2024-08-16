@@ -32,7 +32,7 @@ class ContactsRepository implements IContactsRepository {
     return contact;
   }
 
-  async findByWhatsAppNumberId(whatsapp_number: string): Promise<Contact> {
+  async findByWhatsAppNumber(whatsapp_number: string): Promise<Contact | null> {
     const contact = await prisma.contact.findFirst({
       where: {
         whatsapp_number: whatsapp_number

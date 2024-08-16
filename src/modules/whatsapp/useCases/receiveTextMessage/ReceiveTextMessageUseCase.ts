@@ -93,7 +93,7 @@ class ReceiveTextMessageUseCase {
       if (message_body === 'btn_transcribe_audio') {
         message_type = 'transcribe-audio-message';
 
-        await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio_initial_flow');
+        await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio_message');
       }
     }
 

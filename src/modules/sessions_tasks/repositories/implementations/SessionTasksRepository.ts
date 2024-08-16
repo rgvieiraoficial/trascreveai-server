@@ -18,26 +18,32 @@ class SessionTasksRepository implements ISessionTasksRepository {
       }
     });
 
+    prisma.$disconnect();
+
     return session_tasks;
   }
 
   async list(): Promise<SessionTasks[]> {
     const session_tasks = await prisma.sessionTasks.findMany();
 
+    prisma.$disconnect();
+
     return session_tasks;
   }
 
   async findById(id: string): Promise<SessionTasks | null> {
-    const call = await prisma.sessionTasks.findUnique({
+    const session_task = await prisma.sessionTasks.findUnique({
       where: {
         id
       }
     });
 
-    return call;
+    prisma.$disconnect();
+
+    return session_task;
   }
 
-  async findOpenSessionTasksByContact(contactId: string): Promise<SessionTasks> {
+  async findOpenSessionTasksByContact(contactId: string): Promise<SessionTasks | null> {
     const session_task = await prisma.sessionTasks.findFirst({
       where: {
         contactId,
@@ -46,6 +52,8 @@ class SessionTasksRepository implements ISessionTasksRepository {
         }
       }
     });
+
+    prisma.$disconnect();
 
     return session_task;
   }
@@ -59,7 +67,9 @@ class SessionTasksRepository implements ISessionTasksRepository {
       where: {
         id
       }
-    })
+    });
+
+    prisma.$disconnect();
 
     return session_task;
   }
@@ -73,7 +83,9 @@ class SessionTasksRepository implements ISessionTasksRepository {
       where: {
         id
       }
-    })
+    });
+
+    prisma.$disconnect();
 
     return session_task;
   }
