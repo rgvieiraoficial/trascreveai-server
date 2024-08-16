@@ -58,7 +58,7 @@ class ReceiveAudioMessageUseCase {
     if (!sessionTaskExists || sessionTaskExists.status === 2) {
       session_task = await this.sessionsTasksRepository.create({
         status: 1,
-        stage: 'transribe_audio_message',
+        stage: 'trancribe_audio_message',
         contact: {
           connect: {
             id: contact.id
@@ -71,8 +71,8 @@ class ReceiveAudioMessageUseCase {
 
     let message_type: string = '';
 
-    if (session_task.stage === 'transribe_audio_message') {
-      message_type = 'transcibe-audio-message';
+    if (session_task.stage === 'trancribe_audio_message') {
+      message_type = 'trancribe-audio-message';
 
       await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
         type: 'text',
