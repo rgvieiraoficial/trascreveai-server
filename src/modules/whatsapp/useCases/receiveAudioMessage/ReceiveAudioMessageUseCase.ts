@@ -51,13 +51,6 @@ class ReceiveAudioMessageUseCase {
       contact = contactExists;
     }
 
-    await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
-      type: 'text',
-      body: {
-        text: 'Transcrevendo áudio...'
-      }
-    }]);
-
     let session_task: SessionTasks = null;
 
     const sessionTaskExists = await this.sessionsTasksRepository.findOpenSessionTasksByContact(contact.id);
@@ -65,7 +58,7 @@ class ReceiveAudioMessageUseCase {
     if (!sessionTaskExists || sessionTaskExists.status === 2) {
       session_task = await this.sessionsTasksRepository.create({
         status: 1,
-        stage: 'welcome-message',
+        stage: 'transcribing_audio',
         contact: {
           connect: {
             id: contact.id
@@ -76,16 +69,42 @@ class ReceiveAudioMessageUseCase {
       session_task = sessionTaskExists;
     }
 
-    const file_path = await downloadAudioFromMeta(phone_number_id, audio.id);
+    let message_type: string = '';
 
-    const transcript = await audioTranscribe(file_path);
+    if (session_task.stage === 'transribe_audio_message') {
+      message_type = 'transcibe-audio-message';
 
-    await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
-      type: 'text',
-      body: {
-        text: `*${transcript}*`
-      }
-    }]);
+      await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
+        type: 'text',
+        body: {
+          text: 'Transcrevendo áudio...'
+        }
+      }]);
+
+      await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio');
+
+      const file_path = await downloadAudioFromMeta(phone_number_id, audio.id);
+
+      const transcript = await audioTranscribe(file_path);
+
+      await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
+        type: 'text',
+        body: {
+          text: `*${transcript}*`
+        }
+      }]);
+
+      await this.sessionsTasksRepository.updateStatus(session_task.id, 2);
+    } else if (session_task.stage === 'transcribing_audio') {
+      message_type = 'transcribing-audio-message';
+
+      await sendMessageToWhatsAppContact(phone_number_id, contact.whatsapp_number, [{
+        type: 'text',
+        body: {
+          text: 'Não sei o que responder ainda...'
+        }
+      }]);
+    }
   }
 }
 
