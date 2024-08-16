@@ -76,6 +76,8 @@ class ReceiveTextMessageUseCase {
 
         await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio_message');
       }
+    } else if (session_task.stage === 'transcribe_audio') {
+      message_type = 'sended-text-error-message';
     }
 
     const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType(message_type);
