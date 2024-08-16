@@ -32,7 +32,7 @@ class ReceiveTextMessageUseCase {
 
     await markMessageAsRead(phone_number_id, message_id);
 
-    const contactExists = await this.contactsRepository.findByPhoneNumberId(phone_number_id);
+    const contactExists = await this.contactsRepository.findByWhatsAppNumber(from);
 
     let contact: Contact = null;
 
