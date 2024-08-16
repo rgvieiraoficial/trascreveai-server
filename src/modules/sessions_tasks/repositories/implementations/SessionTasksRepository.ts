@@ -89,6 +89,16 @@ class SessionTasksRepository implements ISessionTasksRepository {
 
     return session_task;
   }
+
+  async delete(id: string): Promise<void> {
+    await prisma.sessionTasks.delete({
+      where: {
+        id
+      }
+    });
+
+    prisma.$disconnect();
+  }
 }
 
 export { SessionTasksRepository };

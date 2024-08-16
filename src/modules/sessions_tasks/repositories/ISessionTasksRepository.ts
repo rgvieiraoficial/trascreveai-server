@@ -7,6 +7,7 @@ interface ISessionTasksRepository {
   list(): Promise<SessionTasks[]>;
   updateStatus(id: string, status: number): Promise<SessionTasks>;
   updateStage(id: string, stage: string): Promise<SessionTasks>;
+  delete(id: string): Promise<void>;
 }
 
 export { ISessionTasksRepository };

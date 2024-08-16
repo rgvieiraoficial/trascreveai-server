@@ -15,9 +15,9 @@ class DeleteBotMessageTemplateController {
   async handle(request: FastifyRequest, reply: FastifyReply): Promise<FastifyReply> {
     const { id } = request.body as IRquestBody;
 
-    const messagesTemplates = await this.deleteBotMessageTemplateUseCase.execute({ id });
+    await this.deleteBotMessageTemplateUseCase.execute({ id });
 
-    return reply.status(200).send(messagesTemplates);
+    return reply.status(200).send();
   }
 }
 
