@@ -1,9 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { Contact } from '@prisma/client';
+import { Contact, SessionTasks } from '@prisma/client';
 
 import { IBotMessagesTemplatesRepository } from '../../../bot/repositories/IBotMessagesTemplatesRepository';
 import { IContactsRepository } from '../../../contacts/repositories/IContactsRepository';
+import { ISessionTasksRepository } from '../../../../modules/sessions_tasks/repositories/ISessionTasksRepository';
 
 import { graphApi } from '../../../../lib/graphApi';
 
@@ -21,7 +22,8 @@ class ReceiveTextMessageUseCase {
 
   constructor(
     private botsMessagesTemplatesRepository: IBotMessagesTemplatesRepository,
-    private contactsRepository: IContactsRepository
+    private contactsRepository: IContactsRepository,
+    private sessionsTasksRepository: ISessionTasksRepository
   ) { }
 
   async execute({ name, phone_number_id, from, message_id, message_body }: IRequest): Promise<void> {
@@ -63,7 +65,39 @@ class ReceiveTextMessageUseCase {
       contact = contactExists;
     }
 
-    const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType('welcome-message');
+    let session_task: SessionTasks = null;
+
+    const sessionTaskExists = await this.sessionsTasksRepository.findOpenSessionTasksByContact(contact.id);
+
+    if (!sessionTaskExists || sessionTaskExists.status === 1) {
+      session_task = await this.sessionsTasksRepository.create({
+        status: 1,
+        stage: 'welcome-message',
+        contact: {
+          connect: {
+            id: contact.id
+          }
+        }
+      });
+    } else {
+      session_task = sessionTaskExists;
+    }
+
+    let message_type: string = '';
+
+    if (session_task.stage === 'welcome-message') {
+      message_type = 'welcome-message';
+
+      await this.sessionsTasksRepository.updateStage(session_task.id, 'initial_list_menu');
+    } else if (session_task.stage === 'initial_list_menu') {
+      if (message_body === 'btn_transcribe_audio') {
+        message_type = 'transcribe-audio-message';
+
+        await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio_initial_flow');
+      }
+    }
+
+    const getBotMessageToSend = await this.botsMessagesTemplatesRepository.findByType(message_type);
 
     const botMessages: IMessageContent[] = getBotMessageToSend.content as {} as IMessageContent[];
 

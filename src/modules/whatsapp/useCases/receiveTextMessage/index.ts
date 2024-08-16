@@ -1,5 +1,6 @@
 import { BotMessagesTemplatesRepository } from '../../../bot/repositories/implementations/BotMessagesTemplatesRepository';
 import { ContactsRepository } from '../../../contacts/repositories/implementations/ContactsRepository';
+import { SessionTasksRepository } from '../../../sessions_tasks/repositories/implementations/SessionTasksRepository';
 
 import { ReceiveTextMessageUseCase } from './ReceiveTextMessageUseCase';
 
@@ -9,7 +10,9 @@ const botMessagesTemplatesRepository = new BotMessagesTemplatesRepository();
 
 const contactsRepository = new ContactsRepository();
 
-const receiveTextMessageUseCase = new ReceiveTextMessageUseCase(botMessagesTemplatesRepository, contactsRepository);
+const sessionTasksRepository = new SessionTasksRepository();
+
+const receiveTextMessageUseCase = new ReceiveTextMessageUseCase(botMessagesTemplatesRepository, contactsRepository, sessionTasksRepository);
 
 const receiveTextMessageController = new ReceiveTextMessageController(receiveTextMessageUseCase);
 
