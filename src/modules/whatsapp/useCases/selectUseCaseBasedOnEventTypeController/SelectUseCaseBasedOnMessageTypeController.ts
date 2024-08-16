@@ -15,6 +15,10 @@ class SelectUseCaseBasedOnEventTypeController {
     {
       type: 'audio',
       useCase: receiveAudioMessageController
+    },
+    {
+      type: 'interactive',
+      useCase: receiveTextMessageController
     }
   ];
 
