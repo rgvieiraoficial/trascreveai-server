@@ -76,7 +76,7 @@ class ReceiveTextMessageUseCase {
 
         await this.sessionsTasksRepository.updateStage(session_task.id, 'transcribe_audio_message');
       }
-    } else if (session_task.stage === 'transcribe_audio') {
+    } else if (session_task.stage === 'transcribe_audio_message') {
       message_type = 'sended-text-error-message';
     }
 
