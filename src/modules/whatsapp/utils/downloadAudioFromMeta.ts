@@ -43,7 +43,7 @@ const downloadAudioFromMeta = async (phone_number_id: string, audio_id: string):
         'Content-Type': 'audio/ogg'
       }
     });
-    await pipeline(response.data, fs.createWriteStream(file_name));
+    await pipeline(response.data, fs.createWriteStream(file_path));
     console.log('Download Completed');
 
     return file_path;
