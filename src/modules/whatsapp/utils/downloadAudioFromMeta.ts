@@ -2,7 +2,7 @@ import fs from 'fs';
 import * as stream from 'stream';
 import { promisify } from 'util';
 
-import { graphApi } from '../lib/graphApi';
+import { graphApi } from '../../../lib/graphApi';
 
 const pipeline = promisify(stream.pipeline);
 

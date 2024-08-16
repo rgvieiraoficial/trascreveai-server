@@ -4,8 +4,8 @@ import { AxiosResponse } from 'axios';
 
 import { graphApi } from '../../../../lib/graphApi';
 
-import { audioTranscribe } from '../../../../utils/audioTranscribe';
-import downloadAudioFromMeta from '../../../../utils/downloadAudioFromMeta';
+import { audioTranscribe } from '../../utils/audioTranscribe';
+import downloadAudioFromMeta from '.././../utils/downloadAudioFromMeta';
 
 interface IRequest {
   name: string;

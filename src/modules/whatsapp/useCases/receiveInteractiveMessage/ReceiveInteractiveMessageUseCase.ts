@@ -2,7 +2,7 @@ import { Contact, SessionTasks } from '@prisma/client';
 
 import { IBotMessagesTemplatesRepository } from '../../../bot/repositories/IBotMessagesTemplatesRepository';
 import { IContactsRepository } from '../../../contacts/repositories/IContactsRepository';
-import { ISessionTasksRepository } from '../../../../modules/sessions_tasks/repositories/ISessionTasksRepository';
+import { ISessionTasksRepository } from '../../../sessions_tasks/repositories/ISessionTasksRepository';
 
 import { IMessageContent } from '../../types/whastsappTypes';
 
@@ -17,7 +17,7 @@ interface IRequest {
   message_body: string;
 }
 
-class ReceiveTextMessageUseCase {
+class ReceiveInteractiveMessageUseCase {
 
   constructor(
     private botsMessagesTemplatesRepository: IBotMessagesTemplatesRepository,
@@ -86,4 +86,4 @@ class ReceiveTextMessageUseCase {
   }
 }
 
-export { ReceiveTextMessageUseCase };
+export { ReceiveInteractiveMessageUseCase };
