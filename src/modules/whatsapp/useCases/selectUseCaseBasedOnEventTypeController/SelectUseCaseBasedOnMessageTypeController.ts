@@ -4,6 +4,7 @@ import { IWebhookEventBody } from '../../types/webhookEventBody';
 
 import { receiveTextMessageController } from '../receiveTextMessage';
 import { receiveAudioMessageController } from '../receiveAudioMessage';
+import { receiveInteractiveMessageController } from '../receiveInteractiveMessage';
 
 class SelectUseCaseBasedOnEventTypeController {
 
@@ -18,7 +19,7 @@ class SelectUseCaseBasedOnEventTypeController {
     },
     {
       type: 'interactive',
-      useCase: receiveTextMessageController
+      useCase: receiveInteractiveMessageController
     }
   ];
 
