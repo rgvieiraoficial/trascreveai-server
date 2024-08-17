@@ -31,6 +31,16 @@ class SessionTasksRepository implements ISessionTasksRepository {
     return session_tasks;
   }
 
+  async closeAll(): Promise<void> {
+    const session_tasks = await prisma.sessionTasks.updateMany({
+      data: {
+        status: 2
+      }
+    });
+
+    prisma.$disconnect();
+  }
+
   async findById(id: string): Promise<SessionTasks | null> {
     const session_task = await prisma.sessionTasks.findUnique({
       where: {

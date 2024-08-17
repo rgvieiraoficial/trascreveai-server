@@ -5,6 +5,7 @@ interface ISessionTasksRepository {
   findById(id: string): Promise<SessionTasks | null>;
   findOpenSessionTasksByContact(contact_id: string): Promise<SessionTasks | null>;
   list(): Promise<SessionTasks[]>;
+  closeAll(): Promise<void>;
   updateStatus(id: string, status: number): Promise<SessionTasks>;
   updateStage(id: string, stage: string): Promise<SessionTasks>;
   delete(id: string): Promise<void>;
